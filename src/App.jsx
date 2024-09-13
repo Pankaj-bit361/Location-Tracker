@@ -4,7 +4,6 @@ import './App.css';
 function App() {
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [errorMessage, setErrorMessage] = useState('');
-  const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
 
   const fetchLocation = () => {
@@ -16,27 +15,13 @@ function App() {
         (position) => {
           const { latitude, longitude } = position.coords;
           setLocation({ latitude, longitude });
-          fetchAddress(latitude, longitude);
+          setLoading(false); // stop loader once location is fetched
         },
         (error) => {
           setLoading(false);
           setErrorMessage('Unable to retrieve your location');
         }
       );
-    }
-  };
-
-  const fetchAddress = async (latitude, longitude) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-      );
-      const data = await response.json();
-      setAddress(data.display_name);
-    } catch (error) {
-      setErrorMessage('Unable to retrieve location address');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -49,7 +34,6 @@ function App() {
         <div className="location-info">
           <p><strong>Latitude:</strong> {location.latitude}</p>
           <p><strong>Longitude:</strong> {location.longitude}</p>
-          <p><strong>Address:</strong> {address}</p>
         </div>
       )}
       {errorMessage && <p className="error">{errorMessage}</p>}
